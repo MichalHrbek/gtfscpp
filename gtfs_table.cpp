@@ -67,5 +67,5 @@ GtfsTable::GtfsTable(std::string filename) {
 
     auto t2 = std::chrono::high_resolution_clock::now(); // End the timer
     auto ms_int = std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1);
-    std::cout << filename << " loaded in " <<  ms_int.count() << "ms\n" << fields.size() <<"\n";
+    std::cout << filename << " loaded in " <<  ms_int.count() << "ms\n";
 }

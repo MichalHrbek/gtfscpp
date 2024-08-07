@@ -19,9 +19,13 @@ class Collection {
         GtfsObject last();
         std::optional<GtfsObject> get_by_unique_id(std::string field, std::string value);
         Collection get_by_id(std::string field, std::string value);
+        Collection matching_id(Collection c, std::string field);
         bool contains(std::string field, std::string value);
         size_t size();
         bool empty();
 
+        void add(GtfsObject o);
+
         void print();
+        void print(std::vector<std::string> fields);
 };

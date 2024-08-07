@@ -51,6 +51,12 @@ Collection Collection::get_by_id(std::string field, std::string value) {
     return where([field,value](GtfsObject o) {return o.getValue(field) == value;});
 }
 
+Collection Collection::matching_id(Collection c, std::string field) {
+    return c.where([this, field](GtfsObject o) {
+        return contains(field, o.getValue(field));
+    });
+}
+
 bool Collection::contains(std::string field, std::string value) {
     for (GtfsObject o : rows) {
         if (o.getValue(field) == value) return true;
@@ -66,14 +72,8 @@ bool Collection::empty() {
     return rows.empty();
 }
 
-void print_vector(std::vector<std::string> v) {
-    for (size_t i = 0; i < v.size(); i++)
-    {
-        if (i != 0) std::cout << ',';
-        if (v.at(i).find('"') != std::string::npos) std::cout << '"' << v.at(i) << '"'; // Quoted
-        else std::cout << v.at(i); // Unquoted
-    }
-    std::cout << std::endl;
+void Collection::add(GtfsObject o) {
+    rows.push_back(o);
 }
 
 void Collection::print() {
@@ -82,5 +82,16 @@ void Collection::print() {
         if (i == 0 || rows.at(i-1).fields != rows.at(i).fields) print_vector(*rows.at(i).fields);
         print_vector(rows.at(i).values);
     }
-    
+}
+
+void Collection::print(std::vector<std::string> fields) {
+    print_vector(fields);
+    for (GtfsObject o : rows) {
+        for (size_t i = 0; i < fields.size(); i++)
+        {
+            if (i != 0) std::cout << ',';
+            print_value(o.getValue(fields.at(i)));
+        }
+        std::cout << std::endl;
+    }
 }
