@@ -1,4 +1,3 @@
-#pragma once
 #include "collection.h"
 #include <iostream>
 #include <cassert>
@@ -40,6 +39,15 @@ GtfsObject Collection::first() {
 
 GtfsObject Collection::last() {
     return rows.at(rows.size()-1);
+}
+
+GtfsObject Collection::get_by_unique_id(std::string field, std::string value) {
+    for (GtfsObject o : rows) {
+        if (o.getValue(field) == value) return o;
+    }
+}
+Collection Collection::get_by_id(std::string field, std::string value) {
+    return where([field,value](GtfsObject o) {return o.getValue(field) == value;});
 }
 
 size_t Collection::size() {

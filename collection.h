@@ -16,6 +16,8 @@ class Collection {
         Collection range(size_t start, size_t end);
         GtfsObject first();
         GtfsObject last();
+        GtfsObject get_by_unique_id(std::string field, std::string value);
+        Collection get_by_id(std::string field, std::string value);
         size_t size();
         bool empty();
 
