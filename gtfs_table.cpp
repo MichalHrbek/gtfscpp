@@ -1,0 +1,72 @@
+#include "gtfs_table.h"
+#include <iostream>
+#include <fstream>
+#include <chrono>
+
+std::vector<std::string> parse_line(std::ifstream& stream, size_t reserve = 0) {
+    std::vector<std::string> values;
+    if (reserve) {
+        values.reserve(reserve);
+    }
+    char ch;
+    std::string field = "";
+    bool in_quotes = false;
+    bool unquote = false;
+    while (stream >> std::noskipws >> ch) {
+        if (ch == '\n') return values;
+        if (ch == '"') {
+            if (unquote) {
+                field += '"';
+                unquote = false;
+                in_quotes = true;
+            } else if (in_quotes) {
+                unquote = true;
+                in_quotes = false;
+            } else {
+                in_quotes = true;
+            }
+            continue;
+        }
+        if (unquote) unquote = false;
+        if (!in_quotes && ch == ',') {
+            values.push_back(field);
+            field = "";
+            continue;
+        }
+
+        field += ch;
+    }
+    stream.close();
+    return values;
+}
+
+GtfsTable::GtfsTable(std::string filename) {
+    using std::chrono::high_resolution_clock;
+    using std::chrono::duration_cast;
+    using std::chrono::duration;
+    using std::chrono::milliseconds;
+    auto t1 = high_resolution_clock::now();
+
+    std::ifstream fin(filename); 
+
+    if (!fin.is_open()) { 
+        std::cerr << "Error opening the file!" << std::endl;
+        return;
+    }
+
+    fields = parse_line(fin);
+    size_t n_fields = fields.size();
+
+    while (fin.is_open()) {
+        rows.push_back(GtfsObject(&fields, parse_line(fin, n_fields)));
+    }
+
+    // TODO: 0 rows?
+    if (rows.at(rows.size()-1).values.empty()) {
+        rows.pop_back();
+    }
+
+    auto t2 = high_resolution_clock::now();
+    auto ms_int = duration_cast<milliseconds>(t2 - t1);
+    std::cout << filename << " loaded in " <<  ms_int.count() << "ms\n";
+}
