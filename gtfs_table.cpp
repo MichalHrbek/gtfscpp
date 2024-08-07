@@ -13,7 +13,10 @@ std::vector<std::string> parse_line(std::ifstream& stream, size_t reserve = 0) {
     bool in_quotes = false;
     bool unquote = false;
     while (stream >> std::noskipws >> ch) {
-        if (ch == '\n') return values;
+        if (ch == '\n') {
+            values.push_back(field);
+            return values;
+        }
         if (ch == '"') {
             if (unquote) {
                 field += '"';
@@ -41,11 +44,7 @@ std::vector<std::string> parse_line(std::ifstream& stream, size_t reserve = 0) {
 }
 
 GtfsTable::GtfsTable(std::string filename) {
-    using std::chrono::high_resolution_clock;
-    using std::chrono::duration_cast;
-    using std::chrono::duration;
-    using std::chrono::milliseconds;
-    auto t1 = high_resolution_clock::now();
+    auto t1 = std::chrono::high_resolution_clock::now(); // Start the timer
 
     std::ifstream fin(filename); 
 
@@ -66,7 +65,7 @@ GtfsTable::GtfsTable(std::string filename) {
         rows.pop_back();
     }
 
-    auto t2 = high_resolution_clock::now();
-    auto ms_int = duration_cast<milliseconds>(t2 - t1);
-    std::cout << filename << " loaded in " <<  ms_int.count() << "ms\n";
+    auto t2 = std::chrono::high_resolution_clock::now(); // End the timer
+    auto ms_int = std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1);
+    std::cout << filename << " loaded in " <<  ms_int.count() << "ms\n" << fields.size() <<"\n";
 }
