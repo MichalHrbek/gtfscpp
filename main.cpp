@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <ctime>
 #include "gtfs_table.h"
 
 int main(int argc, char *argv[])
@@ -9,17 +10,24 @@ int main(int argc, char *argv[])
     // GtfsTable stop_times("gtfs/stop_times.txt");
     GtfsTable stops("gtfs/stops.txt");
     GtfsTable routes("gtfs/routes.txt");
-    GtfsTable trips("gtfs/routes.txt");
+    GtfsTable route_stops("gtfs/route_stops.txt");
+    GtfsTable trips("gtfs/trips.txt");
+    GtfsTable calendar("gtfs/calendar.txt");
+    GtfsTable calendar_dates("gtfs/calendar_dates.txt");
     
-    std::cout << "Done" << std::endl;
+    std::cout << "Done" << std::endl << std::endl;
 
-
-
-    /*table.where([](GtfsObject o) {
-        return o.getValue("route_id") == "L145";
+    // Example that lists lines passing trough a stop selected by name
+    stops.where([](GtfsObject o) {
+        return o.getValue("stop_name") == "Počeradská";
     })
-    .range(0,5)
-    .print();*/
+    .matching_id(route_stops, "stop_id")
+    .matching_id(routes, "route_id")
+    .print({"route_short_name", "route_long_name"});
+
+    time_t timestamp;
+    time(&timestamp);
+    std::cout << std::endl << ctime(&timestamp);
 
     return 0;
 }
