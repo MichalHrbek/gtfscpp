@@ -19,12 +19,8 @@ Collection Collection::for_each(const std::function<void(GtfsObject)>& func) {
     return *this;
 }
 
-Collection Collection::join(Collection c) {
-    std::vector<GtfsObject> AB = {};
-    AB.reserve( rows.size() + c.rows.size() );
-    AB.insert( AB.end(), rows.begin(), rows.end() );
-    AB.insert( AB.end(), c.rows.begin(), c.rows.end() );
-    return AB;
+Collection Collection::concat(Collection c) {
+    return Collection(concat_vectors(rows, c.rows));
 }
 
 Collection Collection::range(size_t start, size_t end) {
@@ -57,6 +53,31 @@ Collection Collection::matching_id(Collection c, std::string field) {
     });
 }
 
+// The id is unique in c, doesn't have to be unique in this
+Collection Collection::join_by_unique_id(Collection c, std::string field) {
+    std::vector<GtfsObject> result;
+    result.reserve(rows.size());
+    std::vector<std::string>* l_fields = nullptr;
+    std::vector<std::string>* r_fields = nullptr;
+    std::vector<std::string>* result_fields = nullptr;
+
+    for (GtfsObject i : rows) {
+        for (GtfsObject j : c.rows) {
+            if (i.getValue(field) == j.getValue(field)) {
+                if (!result_fields || l_fields != i.fields || r_fields != j.fields) {
+                    l_fields = i.fields;
+                    r_fields = j.fields;
+                    static std::vector<std::string> joined_fields = concat_vectors(*l_fields, *r_fields);
+                    result_fields = &joined_fields;
+                }
+                result.push_back(GtfsObject(result_fields, concat_vectors(i.values, j.values)));
+            }
+        }
+    }
+
+    return Collection(result);
+}
+
 bool Collection::contains(std::string field, std::string value) {
     for (GtfsObject o : rows) {
         if (o.getValue(field) == value) return true;
@@ -84,7 +105,7 @@ void Collection::print() {
     }
 }
 
-void Collection::print(std::vector<std::string> fields) {
+void Collection::print(const std::vector<std::string>& fields) {
     print_vector(fields);
     for (GtfsObject o : rows) {
         for (size_t i = 0; i < fields.size(); i++)

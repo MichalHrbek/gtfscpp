@@ -14,3 +14,10 @@ class GtfsObject {
 
 void print_vector(std::vector<std::string> v);
 void print_value(std::string value);
+
+template <typename T>
+std::vector<T> concat_vectors(const std::vector<T>& a, const std::vector<T>& b) {
+    std::vector<T> ab = a;
+    ab.insert(ab.end(), b.begin(), b.end());
+    return ab;
+}
