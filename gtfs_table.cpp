@@ -13,6 +13,7 @@ std::vector<std::string> parse_line(std::ifstream& stream, size_t reserve = 0) {
     bool in_quotes = false;
     bool unquote = false;
     while (stream >> std::noskipws >> ch) {
+        if (ch == '\r') continue;
         if (ch == '\n') {
             values.push_back(field);
             return values;
