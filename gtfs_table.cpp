@@ -61,7 +61,7 @@ GtfsTable::GtfsTable(std::string filename) {
         rows.push_back(GtfsObject(&fields, parse_line(fin, n_fields)));
     }
 
-    // TODO: 0 rows?
+    // TODO: 0 rows? I don't think this even works, since the last row will have 1 empty string
     if (rows.at(rows.size()-1).values.empty()) {
         rows.pop_back();
     }

@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <string>
+#include <iostream>
 
 class GtfsObject {
     public:
@@ -12,8 +13,8 @@ class GtfsObject {
         std::string getValue(std::string field);
 };
 
-void print_vector(std::vector<std::string> v);
-void print_value(std::string value);
+void print_vector(std::vector<std::string> v, std::ostream& stream = std::cout);
+void print_value(std::string value, std::ostream& stream = std::cout);
 
 template <typename T>
 std::vector<T> concat_vectors(const std::vector<T>& a, const std::vector<T>& b) {

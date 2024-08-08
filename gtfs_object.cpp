@@ -9,16 +9,16 @@ std::string GtfsObject::getValue(std::string field) {
     return NULL;
 }
 
-void print_value(std::string value) {
-    if (value.find('"') != std::string::npos) std::cout << '"' << value << '"'; // Quoted
-    else std::cout << value; // Unquoted
+void print_value(std::string value, std::ostream& stream) {
+    if (value.find('"') != std::string::npos) stream << '"' << value << '"'; // Quoted
+    else stream << value; // Unquoted
 }
 
-void print_vector(std::vector<std::string> v) {
+void print_vector(std::vector<std::string> v, std::ostream& stream) {
     for (size_t i = 0; i < v.size(); i++)
     {
-        if (i != 0) std::cout << ',';
+        if (i != 0) stream << ',';
         print_value(v.at(i));
     }
-    std::cout << std::endl;
+    stream << std::endl;
 }

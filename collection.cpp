@@ -37,6 +37,23 @@ GtfsObject Collection::last() {
     return rows.at(rows.size()-1);
 }
 
+// This is probably useless
+Collection Collection::select(std::vector<std::string> fields) {
+    std::vector<GtfsObject> result;
+    result.reserve(rows.size());
+    size_t nfields = fields.size();
+    for (GtfsObject o : rows) {
+        std::vector<std::string> new_values;
+        new_values.reserve(nfields);
+        for (size_t i = 0; i < fields.size(); i++)
+        {
+            new_values.push_back(o.getValue(fields.at(i)));
+        }
+        result.push_back(GtfsObject(&fields, new_values));
+    }
+    return result;
+}
+
 std::optional<GtfsObject> Collection::get_by_unique_id(std::string field, std::string value) {
     for (GtfsObject o : rows) {
         if (o.getValue(field) == value) return o;
@@ -97,22 +114,22 @@ void Collection::add(GtfsObject o) {
     rows.push_back(o);
 }
 
-void Collection::print() {
+void Collection::print(std::ostream& stream) {
     for (size_t i = 0; i < rows.size(); i++)
     {
-        if (i == 0 || rows.at(i-1).fields != rows.at(i).fields) print_vector(*rows.at(i).fields);
-        print_vector(rows.at(i).values);
+        if (i == 0 || rows.at(i-1).fields != rows.at(i).fields) print_vector(*rows.at(i).fields, stream);
+        print_vector(rows.at(i).values, stream);
     }
 }
 
-void Collection::print(const std::vector<std::string>& fields) {
-    print_vector(fields);
+void Collection::print(const std::vector<std::string>& fields, std::ostream& stream) {
+    print_vector(fields, stream);
     for (GtfsObject o : rows) {
         for (size_t i = 0; i < fields.size(); i++)
         {
-            if (i != 0) std::cout << ',';
-            print_value(o.getValue(fields.at(i)));
+            if (i != 0) stream << ',';
+            print_value(o.getValue(fields.at(i)), stream);
         }
-        std::cout << std::endl;
+        stream << std::endl;
     }
 }
